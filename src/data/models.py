@@ -102,3 +102,32 @@ class CasePc(SQLModel, table=True):
     price: int
     url: str
     rgb: int
+
+class FullPcBuild(SQLModel, table=True):
+    __tablename__ = "full_pc_build"
+
+    cpu_id: int = Field(foreign_key="cpu.id", primary_key=True)
+    motherboard_id: int = Field(foreign_key="motherboard.id", primary_key=True)
+    cooler_id: int = Field(foreign_key="cooler.id", primary_key=True)
+    ram_id: int = Field(foreign_key="ram.id", primary_key=True)
+    gpu_id: int = Field(foreign_key="gpu.id", primary_key=True)
+    storage_id: int = Field(foreign_key="storage.id", primary_key=True)
+    psu_id: int = Field(foreign_key="psu.id", primary_key=True)
+    casepc_id: int = Field(foreign_key="casepc.id", primary_key=True)
+
+    cpu_general_performance: int
+    cpu_gaming_performance: int
+    gpu_gaming_performance: int
+    gpu_productivity_performance: int
+    rgb: int
+    noise: int
+    ports: int
+    wifi: int
+    ethernet: int
+    nvme: int
+    rating: int
+    ram_capacity: int
+    ram_speed: int
+    storage_capacity: int
+    storage_speed: int
+    price: int
