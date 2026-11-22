@@ -16,6 +16,7 @@ class Cpu(SQLModel, table=True):
     socket: str
     ram_type: str
     cooler: bool = False
+    upgradable: int
 
 
 class Motherboard(SQLModel, table=True):
@@ -117,8 +118,10 @@ class FullPcBuild(SQLModel, table=True):
 
     cpu_general_performance: int
     cpu_gaming_performance: int
+    upgradable: int
     gpu_gaming_performance: int
     gpu_productivity_performance: int
+    vram: int
     rgb: int
     noise: int
     ports: int

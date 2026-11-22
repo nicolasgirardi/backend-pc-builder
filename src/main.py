@@ -125,7 +125,7 @@ def listar_best_pcs(
     psu = db.obtener_todos(session, Psu)
     casepc = db.obtener_todos(session, CasePc)
     generator = PCGenerator(cpu, gpu, casepc, cooler,ram, psu, storage, mother)
-    weights = list(categories.model_dump().values())
+    weights = categories.to_weights_list()
     pcs = generator.generate(budget)
     full_build_list = []
     for pc in pcs:

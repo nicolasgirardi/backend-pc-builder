@@ -62,6 +62,8 @@ class PC:
             cpu_gaming_performance=self.cpu.gaming_performance,
             gpu_gaming_performance=self.gpu.gaming_performance,
             gpu_productivity_performance=self.gpu.productivity_performance,
+            vram=self.gpu.vram,
+            upgradable=self.cpu.upgradable,
             rgb=self.case.rgb,
             noise=self.cooler.noise,
             ports=self.motherboard.ports,
