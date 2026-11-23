@@ -128,6 +128,8 @@ def listar_best_pcs(
     generator = PCGenerator(cpu, gpu, casepc, cooler,ram, psu, storage, mother)
     if dgpu:
         pcs = generator.generate_pcs(budget)
-        return solve_optimization(pcs, categories)
+        results = solve_optimization(pcs, categories)
+        if len(results) > 0:
+            return results
     budget_pcs = generator.generate_budget_pcs(budget)
     return solve_optimization(budget_pcs, categories)
