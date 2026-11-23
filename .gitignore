@@ -226,3 +226,4 @@ __marimo__/
 /.idea/backend-pc-builder.iml
 /.idea/misc.xml
 /.idea/modules.xml
+/.dockerignore

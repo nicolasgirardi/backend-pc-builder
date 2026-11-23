@@ -1,7 +1,7 @@
 import numpy as np
-import pandas as pd
 from pydantic import BaseModel
 from data.models import FullPcBuild
+from pc.pc import PcBuild
 
 
 class Categories(BaseModel):
@@ -145,7 +145,7 @@ def best_pcs(pcs: list[FullPcBuild], weights: list[int]) -> list[tuple[int, floa
     return topsis(matriz, weights, impact, 5)
 
 
-def solve_optimization(pcs, categories) -> List[PcBuild]:
+def solve_optimization(pcs, categories) -> list[PcBuild]:
     weights = categories.to_weights_list()
     full_build_list = []
     final_results = []

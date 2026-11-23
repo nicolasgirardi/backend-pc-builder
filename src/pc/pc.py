@@ -21,6 +21,27 @@ class BudgetIds:
         self.storage_id = storage_id
         self.motherboard_id = motherboard_id
 
+class PcBuild(BaseModel):
+    cpu_model: str
+    cpu_link: str
+    motherboard_model: str
+    motherboard_link: str
+    cooler_model: str
+    cooler_link: str
+    ram_model: str
+    ram_link: str
+    ram_sticks: int
+    gpu_model: str
+    gpu_link: str
+    storage_model: str
+    storage_link: str
+    psu_model: str
+    psu_link: str
+    case_model: str
+    case_link: str
+    price: int
+    score: float
+
 class PC:
     def __init__(self, cpu: Cpu, gpu: Gpu, case: CasePc, cooler: Cooler, ram: Ram, psu: Psu, storage: Storage, motherboard: Motherboard):
         self.cpu = cpu
@@ -188,24 +209,3 @@ class BudgetPc:
             price=self.price,
             score=score,
         )
-
-class PcBuild(BaseModel):
-    cpu_model: str
-    cpu_link: str
-    motherboard_model: str
-    motherboard_link: str
-    cooler_model: str
-    cooler_link: str
-    ram_model: str
-    ram_link: str
-    ram_sticks: int
-    gpu_model: str
-    gpu_link: str
-    storage_model: str
-    storage_link: str
-    psu_model: str
-    psu_link: str
-    case_model: str
-    case_link: str
-    price: int
-    score: float
