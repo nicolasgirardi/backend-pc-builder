@@ -1,4 +1,5 @@
 import os
+import gc
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, status, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -146,4 +147,6 @@ def listar_best_pcs(
         if len(results) > 0:
             return results
     budget_pcs = generator.generate_budget_pcs(budget)
+    del cpu, mother, cooler, ram, gpu, storage, psu, casepc, generator
+    gc.collect()
     return solve_optimization(budget_pcs, categories)

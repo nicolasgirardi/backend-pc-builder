@@ -1,3 +1,4 @@
+import gc
 import numpy as np
 from pydantic import BaseModel
 from data.models import FullPcBuild
@@ -93,8 +94,8 @@ impact = [
 def topsis(
         decision_matrix, weights, impacts, top_n: int = 5
 ) -> list[tuple[int, float]]:
-    x = np.array(decision_matrix, dtype=float)
-    w = np.array(weights, dtype=float)
+    x = np.array(decision_matrix, dtype=np.float32)
+    w = np.array(weights, dtype=np.float32)
 
     # Validaciones básicas
     if x.shape[1] != len(w) or x.shape[1] != len(impacts):
@@ -133,6 +134,12 @@ def topsis(
 
     # 6. Obtener las posiciones ordenadas de mayor a menor y emparejar con su score
     top_indices = np.argsort(score)[::-1][:top_n]
+
+    del x
+    del w
+    del norma
+    del r
+    gc.collect()
 
     return [(int(idx), float(score[idx])) for idx in top_indices]
 
