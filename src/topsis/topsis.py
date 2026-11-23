@@ -46,6 +46,7 @@ class Categories(BaseModel):
             self.price,
         ]
 
+
 CRITERIOS = [
     "cpu_general_performance",
     "cpu_gaming_performance",
@@ -90,7 +91,7 @@ impact = [
 
 
 def topsis(
-    decision_matrix, weights, impacts, top_n: int = 5
+        decision_matrix, weights, impacts, top_n: int = 5
 ) -> list[tuple[int, float]]:
     x = np.array(decision_matrix, dtype=float)
     w = np.array(weights, dtype=float)
@@ -102,7 +103,7 @@ def topsis(
         )
 
     # 1. Normalización vectorial (protegida contra columnas en cero)
-    norma = np.sqrt(np.sum(x**2, axis=0))
+    norma = np.sqrt(np.sum(x ** 2, axis=0))
     norma[norma == 0] = 1.0
     r = x / norma
 
@@ -142,3 +143,19 @@ def best_pcs(pcs: list[FullPcBuild], weights: list[int]) -> list[tuple[int, floa
         dtype=float,
     )
     return topsis(matriz, weights, impact, 5)
+
+
+def solve_optimization(pcs, categories) -> List[PcBuild]:
+    weights = categories.to_weights_list()
+    full_build_list = []
+    final_results = []
+    for pc in pcs:
+        new_pc = pc.to_full_pc_build(categories.price)
+        if new_pc is None:
+            continue
+        full_build_list.append(new_pc)
+    if len(full_build_list) > 0:
+        results = best_pcs(full_build_list, weights)
+        for index, score in results:
+            final_results.append(pcs[index].to_pc_build(score))
+    return final_results

@@ -1,7 +1,7 @@
 from typing import List
 
 from data.models import Cpu, Gpu, CasePc, Cooler, Ram, Psu, Storage, Motherboard
-from pc.pc import PC
+from pc.pc import PC, BudgetPc
 
 
 class PCGenerator:
@@ -15,7 +15,7 @@ class PCGenerator:
         self.storages = storages
         self.motherboards = motherboards
 
-    def generate(self, budget: int) -> List[PC]:
+    def generate_pcs(self, budget: int) -> List[PC]:
         pcs: List[PC] = []
         for cpu in self.cpus:
             if cpu.price > budget:
@@ -31,6 +31,8 @@ class PCGenerator:
                     continue
                 price2 = price1 + mother.price
                 for cooler in self.coolers:
+                    if cooler.power < cpu.power:
+                        continue
                     if price2 + cooler.price > budget or cpu.power > cooler.power:
                         continue
                     price3 = price2 + cooler.price
@@ -58,4 +60,42 @@ class PCGenerator:
                                         new_pc = PC(cpu,gpu,case,cooler,ram,psu,storage,mother)
                                         if new_pc.price < budget:
                                             pcs.append(new_pc)
+        return pcs
+    def generate_budget_pcs(self, budget: int):
+        pcs: List[BudgetPc] = []
+        for cpu in self.cpus:
+            if cpu.price > budget:
+                continue
+            if not cpu.igpu or not cpu.cooler:
+                continue
+            price1 = cpu.price
+            power1 = cpu.power
+            for mother in self.motherboards:
+                if price1 + mother.price > budget or cpu.power > mother.power:
+                    continue
+                if mother.ram_type != cpu.ram_type:
+                    continue
+                if mother.socket != cpu.socket:
+                    continue
+                price3 = price1 + mother.price
+                for ram in self.ram:
+                    if price3 + ram.price > budget:
+                        continue
+                    if ram.type != cpu.ram_type:
+                        continue
+                    price5 = price3 + ram.price
+                    power2 = (power1 + 100) * 1.3
+                    for storage in self.storages:
+                        if price5 + storage.price > budget:
+                            continue
+                        price6 = price5 + storage.price
+                        for psu in self.psus:
+                            if power2 > psu.power or price6 + psu.price > budget:
+                                continue
+                            for case in self.casepc:
+                                if price6 + case.price > budget:
+                                    continue
+                                new_pc = BudgetPc(cpu, case, ram, psu, storage, mother)
+                                if new_pc.price < budget:
+                                    pcs.append(new_pc)
         return pcs

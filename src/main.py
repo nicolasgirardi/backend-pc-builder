@@ -4,7 +4,7 @@ from sqlmodel import Session
 from database.database import db
 from data.models import Cpu, Gpu, CasePc, Cooler, Ram, Psu, Storage, Motherboard, FullPcBuild
 from pc.pc import PcBuild
-from topsis.topsis import best_pcs, Categories
+from topsis.topsis import best_pcs, Categories, solve_optimization
 from pcgenerator.pcgenerator import PCGenerator
 
 SessionDep = Annotated[Session, Depends(db.get_session)]
@@ -114,6 +114,7 @@ def listar_casepcs(session: SessionDep):
 def listar_best_pcs(
         categories: Annotated[Categories, Query()],
         budget: int,
+        dgpu: bool,
         session: SessionDep,
 ):
     cpu = db.obtener_todos(session, Cpu)
@@ -125,16 +126,8 @@ def listar_best_pcs(
     psu = db.obtener_todos(session, Psu)
     casepc = db.obtener_todos(session, CasePc)
     generator = PCGenerator(cpu, gpu, casepc, cooler,ram, psu, storage, mother)
-    weights = categories.to_weights_list()
-    pcs = generator.generate(budget)
-    full_build_list = []
-    for pc in pcs:
-        new_pc = pc.to_full_pc_build(categories.price)
-        if new_pc is None:
-            continue
-        full_build_list.append(new_pc)
-    results = best_pcs(full_build_list, weights)
-    final_results = []
-    for index, score in results:
-        final_results.append(pcs[index].to_pc_build(score))
-    return final_results
+    if dgpu:
+        pcs = generator.generate_pcs(budget)
+        return solve_optimization(pcs, categories)
+    budget_pcs = generator.generate_budget_pcs(budget)
+    return solve_optimization(budget_pcs, categories)
