@@ -93,8 +93,8 @@ impact = [
 def topsis(
         decision_matrix, weights, impacts, top_n: int = 5
 ) -> list[tuple[int, float]]:
-    x = np.array(decision_matrix, dtype=float)
-    w = np.array(weights, dtype=float)
+    x = np.array(decision_matrix, dtype=np.float32)
+    w = np.array(weights, dtype=np.float32)
 
     # Validaciones básicas
     if x.shape[1] != len(w) or x.shape[1] != len(impacts):
