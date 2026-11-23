@@ -5,9 +5,9 @@ from fastapi import Depends, FastAPI, HTTPException, status, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session
 from database.database import db
-from data.models import Cpu, Gpu, CasePc, Cooler, Ram, Psu, Storage, Motherboard, FullPcBuild
+from data.models import Cpu, Gpu, CasePc, Cooler, Ram, Psu, Storage, Motherboard
 from pc.pc import PcBuild
-from topsis.topsis import best_pcs, Categories, solve_optimization
+from topsis.topsis import Categories, solve_optimization
 from pcgenerator.pcgenerator import PCGenerator
 
 SessionDep = Annotated[Session, Depends(db.get_session)]
@@ -16,6 +16,8 @@ app = FastAPI()
 
 origins = []
 frontend_url = os.getenv("FRONTEND_URL")
+budget_break = int(os.getenv("BUDGET_BREAK", 0))
+vram_break = int(os.getenv("VRAM_BREAK", 0))
 if frontend_url:
     origins.append(frontend_url)
 
@@ -132,11 +134,18 @@ def listar_best_pcs(
         dgpu: bool,
         session: SessionDep,
 ):
-    cpu = db.obtener_todos(session, Cpu)
-    mother = db.obtener_todos(session, Motherboard)
+    if budget > budget_break:
+        print("High Budget")
+        cpu = db.obtener_cpus_ddr5(session)
+        mother = db.obtener_mb_ddr5(session)
+        ram = db.obtener_ram_ddr5(session)
+        gpu = db.obtener_gpu_high_vram(session, vram_break)
+    else:
+        cpu = db.obtener_todos(session, Cpu)
+        mother = db.obtener_todos(session, Motherboard)
+        ram = db.obtener_todos(session, Ram)
+        gpu = db.obtener_todos(session, Gpu)
     cooler = db.obtener_todos(session, Cooler)
-    ram = db.obtener_todos(session, Ram)
-    gpu = db.obtener_todos(session, Gpu)
     storage = db.obtener_todos(session, Storage)
     psu = db.obtener_todos(session, Psu)
     casepc = db.obtener_todos(session, CasePc)

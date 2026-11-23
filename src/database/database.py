@@ -3,6 +3,8 @@ from typing import TypeVar
 from dotenv import load_dotenv
 from sqlmodel import Session, SQLModel, create_engine, text, select
 
+from data.models import Cpu, Motherboard, Ram, Gpu
+
 # Tipo genérico para aceptar cualquier modelo (Cpu, Gpu, Ram, etc.)
 T = TypeVar("T", bound=SQLModel)
 
@@ -42,6 +44,22 @@ class Database:
     def obtener_todos(self, session: Session, modelo: type[T]) -> list[T]:
         """Devuelve una lista con todos los registros de la tabla indicada."""
         statement = select(modelo)
+        return list(session.exec(statement).all())
+
+    def obtener_cpus_ddr5(self, session: Session) -> list[Cpu]:
+        """Devuelve todas las CPUs cuyo ram_type sea DDR5."""
+        statement = select(Cpu).where(Cpu.ram_type == "DDR5")
+        return list(session.exec(statement).all())
+    def obtener_mb_ddr5(self, session: Session) -> list[Motherboard]:
+        """Devuelve todas las Motherboard cuyo ram_type sea DDR5."""
+        statement = select(Motherboard).where(Motherboard.ram_type == "DDR5")
+        return list(session.exec(statement).all())
+    def obtener_ram_ddr5(self, session: Session) -> list[Ram]:
+        """Devuelve todas la ram cuyo type sea DDR5."""
+        statement = select(Ram).where(Ram.type == "DDR5")
+        return list(session.exec(statement).all())
+    def obtener_gpu_high_vram(self, session: Session, vram: int) -> list[Gpu]:
+        statement = select(Gpu).where(Gpu.vram >= vram)
         return list(session.exec(statement).all())
 
 
