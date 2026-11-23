@@ -1,5 +1,7 @@
+import os
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, status, Query
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session
 from database.database import db
 from data.models import Cpu, Gpu, CasePc, Cooler, Ram, Psu, Storage, Motherboard, FullPcBuild
@@ -11,6 +13,18 @@ SessionDep = Annotated[Session, Depends(db.get_session)]
 
 app = FastAPI()
 
+origins = []
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    origins.append(frontend_url)
+
+cors_options = {
+    "allow_origins": origins,
+    "allow_credentials": True,
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+app.add_middleware(CORSMiddleware, **cors_options)  # type: ignore
 
 @app.get("/")
 def read_root():
